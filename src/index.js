@@ -1,13 +1,38 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { createStore } from "redux";
+import { createStore, applyMiddleware } from "redux";
+import thunk from "redux-thunk";
 import "./index.css";
 import App from "./components/App";
 import rootReducer from "./reducers";
 //import LogRocket from "logrocket";
 //LogRocket.init("3i2v1t/movieapp");
 
-const store = createStore(rootReducer);
+// const logger = function ({ dispatch, getState }) {
+//   return function (next) {
+//     return function (action) {
+//       console.log("ACTION_TYPE=", action.type);
+//       next(action);
+//     };
+//   };
+// };
+
+const logger = ({ dispatch, getState }) => (next) => (action) => {
+  if (typeof action !== "function") {
+    console.log("ACTION_TYPE=", action.type);
+  }
+  next(action);
+};
+//it's available in the redux package
+// const thunk = ({ dispatch, getState }) => (next) => (action) => {
+//   // console.log("ACTION_TYPE=", action.type);
+//   if (typeof action === "function") {
+//     action(dispatch);
+//     return;
+//   }
+//   next(action);
+// };
+const store = createStore(rootReducer, applyMiddleware(logger, thunk));
 console.log("store", store);
 // console.log("BEFORE STATE", store.getState());
 // store.dispatch({
